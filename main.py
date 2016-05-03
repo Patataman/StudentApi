@@ -11,6 +11,10 @@ app.config.from_pyfile('lib/config.cfg')
 db.app = app
 db.init_app(app)
 
+@app.route('/')
+def index():
+	return "API StudentApi"
+
 #Devolver usuario por nia
 @app.route('/student/<int:nia>', methods=['GET'])
 def getByNia(nia):

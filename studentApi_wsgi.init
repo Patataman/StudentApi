@@ -1,6 +1,0 @@
-[uwsgi]
-socket = /tmp/main.soc
-master = true
-processes = 4
-home = /srv/php5/studentApi
-daemonize = /var/log/studentApi.log
