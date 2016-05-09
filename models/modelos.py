@@ -17,10 +17,11 @@ class Persona(db.Model):
 	curso = db.Column(db.Integer)
 	id_titulacion = db.Column(db.Integer)
 	id_centro = db.Column(db.Integer)
-	permisos = relationship("Permisos", uselist=False, back_populates="personas")
-	isCentro = relationship("DelCentro", uselist=False, back_populates="personas")
-	isCurso = relationship("DelCurso", uselist=False, back_populates="personas")
-	isTitulacion = relationship("DelTitulacion", uselist=False, back_populates="personas")
+
+	#permisos = relationship("Permisos", foreign_keys="[Persona.id]")
+	#isCentro = relationship("DelCentro", foreign_keys="[Persona.id]")
+	#isCurso = relationship("DelCurso", foreign_keys="[Persona.id]")
+	#isTitulacion = relationship("DelTitulacion", foreign_keys="[Persona.id]")
 
 	def __init__(self, nia, nombre, apellido1, apellido2, curso, id_titulacion):
 		self.nia = nia
@@ -40,30 +41,25 @@ class Persona(db.Model):
 class Permisos(db.Model):
 	__tablename__ = 'permisos'
 
-	id = db.Column(db.Integer, ForeignKey('parent.id'), primary_key=True)
+	id = db.Column(db.Integer, primary_key=True)
 	app_id = db.Column(db.Integer, primary_key=True)
 	rol = db.Column(db.Integer)
-	parent = relationship("Persona", back_populates="permisos")
 
 class DelCentro(db.Model):
 	__tablename__ = 'delegadoscentro'
 
-	id = db.Column(db.Integer, ForeignKey('parent.id'), primary_key=True)
+	id = db.Column(db.Integer, primary_key=True)
 	cargo = db.Column(db.Integer)
-	parent = relationship("Persona", back_populates="delegadoscentro")
-
 
 class DelCurso(db.Model):
 	__tablename__ = 'delegadoscurso'
 
-	id = db.Column(db.Integer, ForeignKey('parent.id'), primary_key=True)
-	parent = relationship("Persona", back_populates="delegadoscurso")
+	id = db.Column(db.Integer, primary_key=True)
 
 class DelTitulacion(db.Model):
 	__tablename__ = 'delegadostitulacion'
 
-	id = db.Column(db.Integer, ForeignKey('parent.id'), primary_key=True)
-	parent = relationship("Persona", back_populates="delegadostitulacion")
+	id = db.Column(db.Integer, primary_key=True)
 
 #	def __init__(self, id, app, rol):
 #		self.id = id
