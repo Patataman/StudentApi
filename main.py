@@ -26,7 +26,7 @@ def getByNia(nia):
 		try:
 			students = Student.getStudent(nia)
 		except Exception as e:
-			resp = Response(status=500)
+			resp = Response(status=429)
 			resp.headers['respuesta'] = False
 			return resp
 			#return 'Demasiados resultados', 500
@@ -86,7 +86,7 @@ def getByName(name):
 		try:
 			students = Student.getStudent(result)
 		except Exception as e:
-			resp = Response(status=500)
+			resp = Response(status=429)
 			resp.headers['respuesta'] = False
 			return resp
 			#return 'Demasiados resultados', 500
