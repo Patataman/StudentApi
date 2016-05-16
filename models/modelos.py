@@ -6,6 +6,9 @@ from sqlalchemy.dialects.postgresql import JSON, TEXT
 
 db = SQLAlchemy()
 
+#Column('user_id', Integer, ForeignKey("user.user_id"), nullable=False),
+
+
 class Persona(db.Model):
 	__tablename__ = 'personas'
 
@@ -17,11 +20,6 @@ class Persona(db.Model):
 	curso = db.Column(db.Integer)
 	id_titulacion = db.Column(db.Integer)
 	id_centro = db.Column(db.Integer)
-
-	#permisos = relationship("Permisos", foreign_keys="[Persona.id]")
-	#isCentro = relationship("DelCentro", foreign_keys="[Persona.id]")
-	#isCurso = relationship("DelCurso", foreign_keys="[Persona.id]")
-	#isTitulacion = relationship("DelTitulacion", foreign_keys="[Persona.id]")
 
 	def __init__(self, nia, nombre, apellido1, apellido2, curso, id_titulacion):
 		self.nia = nia
@@ -38,28 +36,56 @@ class Persona(db.Model):
 	def search(self, nia):
 		return db.session.query(Persona).filter_by(nia = nia)
 
+	@classmethod
+	def getPermisos(self, app_id, id):
+		return db.session.query(Permisos).filter_by(id = id, app_id = app_id)
+
+	@classmethod
+	def isDelegado(self, id):
+		return db.session.query(DelCurso).filter_by(id = id)
+
+	@classmethod
+	def isDelegadoTitulacion(self, id):
+		return db.session.query(DelTitulacion).filter_by(id = id)
+
+	@classmethod
+	def isDelegadoCentro(self, id):
+		return db.session.query(DelCentro).filter_by(id = id)
+
 class Permisos(db.Model):
 	__tablename__ = 'permisos'
 
-	id = db.Column(db.Integer, primary_key=True)
+	def __repr__(self):
+		return 'id: {}, app_id: {}, rol: {}'.format(self.id, self.app_id, self.rol)
+
+	id = db.Column(db.Integer, ForeignKey("Persona.id"), primary_key=True)
 	app_id = db.Column(db.Integer, primary_key=True)
 	rol = db.Column(db.Integer)
-
-class DelCentro(db.Model):
-	__tablename__ = 'delegadoscentro'
-
-	id = db.Column(db.Integer, primary_key=True)
-	cargo = db.Column(db.Integer)
 
 class DelCurso(db.Model):
 	__tablename__ = 'delegadoscurso'
 
-	id = db.Column(db.Integer, primary_key=True)
+	def __repr__(self):
+		return 'id: {}'.format(self.id)
+
+	id = db.Column(db.Integer, ForeignKey("Persona.id"), primary_key=True)
 
 class DelTitulacion(db.Model):
 	__tablename__ = 'delegadostitulacion'
 
-	id = db.Column(db.Integer, primary_key=True)
+	def __repr__(self):
+		return 'id: {}'.format(self.id)
+
+	id = db.Column(db.Integer, ForeignKey("Persona.id"), primary_key=True)
+
+class DelCentro(db.Model):
+	__tablename__ = 'delegadoscentro'
+
+	def __repr__(self):
+		return 'id: {}, cargo: {}'.format(self.id, self.cargo)
+
+	id = db.Column(db.Integer, ForeignKey("Persona.id"), primary_key=True)
+	cargo = db.Column(db.Integer)
 
 #	def __init__(self, id, app, rol):
 #		self.id = id

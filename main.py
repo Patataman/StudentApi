@@ -27,7 +27,7 @@ def getByNia(nia):
 			students = Student.getStudent(nia)
 		except Exception as e:
 			resp = Response(status=500)
-			resp.headers['respuesta'] = 'False'
+			resp.headers['respuesta'] = False
 			return resp
 			#return 'Demasiados resultados', 500
 
@@ -52,11 +52,11 @@ def getByNia(nia):
 				#return parser
 		else:
 			resp = Response(status=404)
-			resp.headers['respuesta'] = 'False'
+			resp.headers['respuesta'] = False
 			#return 'Error en la búsqueda', 404
 	else:
 		resp = Response(status=401)
-		resp.headers['respuesta'] = 'False'
+		resp.headers['respuesta'] = False
 		#return 'BAD AUTHORIZATION', 401
 
 #Devolver usuario por nombre
@@ -74,7 +74,7 @@ def getByName(name):
 			nombre[0] = nombre[0].strip()
 		else:
 			resp = Response(status=406)
-			resp.headers['respuesta'] = 'False'
+			resp.headers['respuesta'] = False
 			#return 'BAD REQUEST', 400
 
 		if len(nombre) == 2:
@@ -87,7 +87,7 @@ def getByName(name):
 			students = Student.getStudent(result)
 		except Exception as e:
 			resp = Response(status=500)
-			resp.headers['respuesta'] = 'False'
+			resp.headers['respuesta'] = False
 			return resp
 			#return 'Demasiados resultados', 500
 
@@ -112,12 +112,12 @@ def getByName(name):
 				#return parser
 		else:
 			resp = Response(status=401)
-			resp.headers['respuesta'] = 'False'
+			resp.headers['respuesta'] = False
 			return resp
 			#return 'Error en la búsqueda', 404
 	else:
 		resp = Response(status=401)
-		resp.headers['respuesta'] = 'False'
+		resp.headers['respuesta'] = False
 		return resp
 		#return 'BAD AUTHORIZATION', 401
 
@@ -137,7 +137,7 @@ def authorize():
 		return resp
 	else:
 		resp = Response(status=400)
-		resp.headers['respuesta'] = 'False'
+		resp.headers['respuesta'] = False
 		return resp
 
 #Verifica token pasado por header de http
@@ -148,7 +148,7 @@ def check():
 		r = request.headers.get('Authorization').split()
 	if r[0] != 'Bearer':
 		resp = Response(status=401)
-		resp.headers['respuesta'] = 'False'
+		resp.headers['respuesta'] = False
 		return resp
 		#return 'False', 401
 	else:
@@ -161,7 +161,7 @@ def check():
 			#return 'True', 200
 		except Exception as e:
 			resp = Response(status=401)
-			resp.headers['respuesta'] = 'False'
+			resp.headers['respuesta'] = False
 			return resp
 			#return 'UNAUTHORIZED', 401
 
@@ -177,54 +177,86 @@ def login(nia=None, password=None):
 			#return 'True', 200
 		else:
 			resp = Response(status=401)
-			resp.headers['respuesta'] = 'False'
+			resp.headers['respuesta'] = False
 			return resp
 			#return 'UNAUTHORIZED', 401
 	else:
 		resp = Response(status=400)
-		resp.headers['respuesta'] = 'False'
+		resp.headers['respuesta'] = False
 		return resp
 		#return 'False', 400
 
 @app.route('/permisos/<int:nia>/<int:app_id>', methods=['GET'])
 def getPermisos(nia, app_id):
-	pass
-#	if check().headers['respuesta'] == 'True':
-#		return str(Permisos.getPermisos(nia,app_id)), 200
-#	else:
-#		return 'BAD AUTHORIZATION', 401
+	if check().headers['respuesta'] == 'True':
+		try:
+			persona_id = Persona.search(nia)[0].id
+			permiso = Persona.getPermisos(app_id, persona_id)[0].rol
+			resp = Response(status=200)
+			resp.headers['respuesta'] = permiso
+			return resp
+		except Exception as e:
+			resp = Response(status=200)
+			resp.headers['respuesta'] = 0
+			return resp
+	else:
+		resp = Response(status=400)
+		resp.headers['respuesta'] = False
+		return resp
 
 @app.route('/delegado/<int:nia>', methods=['GET'])
 def getDelegado(nia):
-#	if check().headers['respuesta'] == 'True':
-#
-#	else:
-#		return 'BAD AUTHORIZATION', 401
-	pass
+	if check().headers['respuesta'] == 'True':
+		try:
+			persona_id = Persona.search(nia)[0].id
+			isDel = Persona.isDelegado(persona_id)[0]
+			resp = Response(status=200)
+			resp.headers['respuesta'] = True
+			return resp
+		except Exception as e:
+			resp = Response(status=200)
+			resp.headers['respuesta'] = False
+			return resp
+	else:
+		resp = Response(status=400)
+		resp.headers['respuesta'] = False
+		return resp
 
-@app.route('/delegado/isCurso/<int:nia>', methods=['GET'])
-def isCurso(nia):
-#	if check().headers['respuesta'] == 'True':
-#
-#	else:
-#		return 'BAD AUTHORIZATION', 401
-	pass
-
-@app.route('/delegado/isTitulacion/<int:nia>', methods=['GET'])
+@app.route('/delegadoTit/<int:nia>', methods=['GET'])
 def isTitulacion(nia):
-#	if check().headers['respuesta'] == 'True':
-#
-#	else:
-#		return 'BAD AUTHORIZATION', 401
-	pass
+	if check().headers['respuesta'] == 'True':
+		try:
+			persona_id = Persona.search(nia)[0].id
+			isDel = Persona.isDelegadoTitulacion(persona_id)[0]
+			resp = Response(status=200)
+			resp.headers['respuesta'] = True
+			return resp
+		except Exception as e:
+			resp = Response(status=200)
+			resp.headers['respuesta'] = False
+			return resp
+	else:
+		resp = Response(status=400)
+		resp.headers['respuesta'] = False
+		return resp
 
-@app.route('/delegado/isCentro/<int:nia>', methods=['GET'])
+@app.route('/delegadoCen/<int:nia>', methods=['GET'])
 def isCentro(nia):
-#	if check().headers['respuesta'] == 'True':
-#
-#	else:
-#		return 'BAD AUTHORIZATION', 401
-	pass
+	if check().headers['respuesta'] == 'True':
+		try:
+			persona_id = Persona.search(nia)[0].id
+			cargo = Persona.isDelegadoCentro(persona_id)[0].cargo
+			resp = Response(status=200)
+			resp.headers['respuesta'] = cargo
+			return resp
+		except Exception as e:
+			resp = Response(status=200)
+			resp.headers['respuesta'] = False
+			return resp
+	else:
+		resp = Response(status=400)
+		resp.headers['respuesta'] = False
+		return resp
 
 if __name__ == '__main__':
 	app.run()
