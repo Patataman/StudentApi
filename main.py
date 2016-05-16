@@ -111,7 +111,7 @@ def getByName(name):
 				return resp
 				#return parser
 		else:
-			resp = Response(status=401)
+			resp = Response(status=404)
 			resp.headers['respuesta'] = False
 			return resp
 			#return 'Error en la búsqueda', 404
