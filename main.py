@@ -29,7 +29,6 @@ def getByNia(nia):
 			resp = Response(status=500)
 			resp.headers['respuesta'] = False
 			return resp
-			#return 'Demasiados resultados', 500
 
 		#Parsear resultados y return como json
 		if students != None:
@@ -53,11 +52,9 @@ def getByNia(nia):
 		else:
 			resp = Response(status=404)
 			resp.headers['respuesta'] = False
-			#return 'Error en la búsqueda', 404
 	else:
 		resp = Response(status=401)
 		resp.headers['respuesta'] = False
-		#return 'BAD AUTHORIZATION', 401
 
 #Devolver usuario por nombre
 @app.route('/student/<string:name>', methods=['GET'])
@@ -75,7 +72,6 @@ def getByName(name):
 		else:
 			resp = Response(status=406)
 			resp.headers['respuesta'] = False
-			#return 'BAD REQUEST', 400
 
 		if len(nombre) == 2:
 			result = '(cn=*' + nombre[0] + ' ' + nombre[1] + '*)'
@@ -89,7 +85,6 @@ def getByName(name):
 			resp = Response(status=500)
 			resp.headers['respuesta'] = False
 			return resp
-			#return 'Demasiados resultados', 500
 
 		#Parsear resultados y return como json
 		if students != None:
@@ -114,12 +109,10 @@ def getByName(name):
 			resp = Response(status=404)
 			resp.headers['respuesta'] = False
 			return resp
-			#return 'Error en la búsqueda', 404
 	else:
 		resp = Response(status=401)
 		resp.headers['respuesta'] = False
 		return resp
-		#return 'BAD AUTHORIZATION', 401
 
 #Verifica el login y si es correcto, le genera un token
 @app.route('/auth', methods=['POST'])
@@ -150,7 +143,6 @@ def check():
 		resp = Response(status=401)
 		resp.headers['respuesta'] = False
 		return resp
-		#return 'False', 401
 	else:
 		token = r[1]
 		try:
@@ -158,12 +150,10 @@ def check():
 			resp = Response(status=200)
 			resp.headers['respuesta'] = 'True'
 			return resp
-			#return 'True', 200
 		except Exception as e:
 			resp = Response(status=401)
 			resp.headers['respuesta'] = False
 			return resp
-			#return 'UNAUTHORIZED', 401
 
 #Comprueba si existe el usuario
 @app.route('/login', methods=['POST'])
@@ -174,17 +164,14 @@ def login(nia=None, password=None):
 			resp = Response(status=200)
 			resp.headers['respuesta'] = 'True'
 			return resp
-			#return 'True', 200
 		else:
 			resp = Response(status=401)
 			resp.headers['respuesta'] = False
 			return resp
-			#return 'UNAUTHORIZED', 401
 	else:
 		resp = Response(status=400)
 		resp.headers['respuesta'] = False
 		return resp
-		#return 'False', 400
 
 @app.route('/permisos/<int:nia>/<int:app_id>', methods=['GET'])
 def getPermisos(nia, app_id):

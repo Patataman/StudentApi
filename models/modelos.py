@@ -86,30 +86,3 @@ class DelCentro(db.Model):
 
 	id = db.Column(db.Integer, ForeignKey("Persona.id"), primary_key=True)
 	cargo = db.Column(db.Integer)
-
-#	def __init__(self, id, app, rol):
-#		self.id = id
-#		self.app_id = app_id
-#		self.rol = rol
-#
-#	@classmethod
-#	def getPermisos(self, nia, app_id):
-#		id = db.session.query(Persona).filter_by(nia = nia)[0].id
-#		return db.session.query(Permisos).filter_by(id=id, app_id=app_id)[0].rol
-#
-#class DelCurso(db.Model):
-#	__tablename__ = 'permisos'
-#
-#	id = db.Column(db.Integer, primary_key=True)
-#	app_id = db.Column(db.Integer, primary_key=True)
-#	rol = db.Column(db.Integer)
-#
-#	def __init__(self, id, app, rol):
-#		self.id = id
-#		self.app_id = app_id
-#		self.rol = rol
-#
-#	@classmethod
-#	def getPermisos(self, nia, app_id):
-#		id = db.session.query(Persona).filter_by(nia = nia)[0].id
-#		return db.session.query(Permisos).filter_by(id=id, app_id=app_id)[0].rol
