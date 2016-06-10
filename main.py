@@ -59,9 +59,6 @@ db.init_app(app)
 
 
 
-
-
-
 ''' 
 	Ruta base, permite verificar si la API está 
 	levantada mediante el True que devuelve
