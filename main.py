@@ -88,11 +88,15 @@ def getByNia(nia):
 
 		#Parsear resultados y return como json
 		if students != None:
-			#Nunca debería llamarse, el nía es único
+			#Nunca debería llamarse, el nia es único
 			if len(students)>1:
 				parser = '['
+				bol = 0
 				for i in students:
-					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':')) + ','
+					if bol != 0:
+						parser += ','
+					if bol == 0: bol = 1
+					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
 				parser += ']'
 				return parser, 200
 			else:
