@@ -4,6 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from lib.ldapApi import LdapApi
 from models.modelos import db, Persona
 
+#jwt es la librería para el token.
 import jwt, json, lib.Student as Student, datetime
 
 app = Flask(__name__)
@@ -11,13 +12,74 @@ app.config.from_pyfile('lib/config.cfg')
 db.app = app
 db.init_app(app)
 
+
+#─────────▄──────────────▄
+#────────▌▒█───────────▄▀▒▌
+#────────▌▒▒▀▄───────▄▀▒▒▒▐
+#───────▐▄▀▒▒▀▀▀▀▄▄▄▀▒▒▒▒▒▐
+#─────▄▄▀▒▒▒▒▒▒▒▒▒▒▒█▒▒▄█▒▐        So much code
+#───▄▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▀██▀▒▌
+#──▐▒▒▒▄▄▄▒▒▒▒▒▒▒▒▒▒▒▒▒▀▄▒▒▌
+#──▌▒▒▐▄█▀▒▒▒▒▄▀█▄▒▒▒▒▒▒▒█▒▐
+#─▐▒▒▒▒▒▒▒▒▒▒▒▌██▀▒▒▒▒▒▒▒▒▀▄▌
+#─▌▒▀▄██▄▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▒▒▌    wow
+#─▌▀▐▄█▄█▌▄▒▀▒▒▒▒▒▒░░░░░░▒▒▒▐
+#▐▒▀▐▀▐▀▒▒▄▄▒▄▒▒▒▒▒░░░░░░▒▒▒▒▌
+#▐▒▒▒▀▀▄▄▒▒▒▄▒▒▒▒▒▒░░░░░░▒▒▒▐
+#─▌▒▒▒▒▒▒▀▀▀▒▒▒▒▒▒▒▒░░░░▒▒▒▒▌
+#─▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▐
+#──▀▄▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄▒▒▒▒▌
+#────▀▄▒▒▒▒▒▒▒▒▒▒▄▄▄▀▒▒▒▒▄▀         very REST API
+#───▐▀▒▀▄▄▄▄▄▄▀▀▀▒▒▒▒▒▄▄▀                      wow
+#──▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▀▀
+
+'''
+	! ATENCION !
+
+	ESTA API SE AUTODESTRUIRÁ EN 5- es broma, xdddd
+
+	Para poder usar esta API deberás ser miembro de 
+	la Universidad Carlos III de Madrid y saber tu 
+	NIA y contraseña.
+
+	Con ella se podrá principalmente:
+		- Buscar usuarios dados su nia o nombre.
+		- Obtener un token de verificación si el NIA
+		  y contraseña son correctos Y ADEMÁS perteneces
+		  a la Delegación de Estudiantes.
+		- Verificar el Token generado
+		- Poder verificar si una persona (NIA + contraseña)
+		  pertenece a la Delegación de Estudiantes.
+		- Conocer si dado un NIA esa persona es: 
+			+ Delegado de Curso
+			+ Delegado de Titulación
+			+ Delegado de Centro
+
+'''
+
+
+
+
+
+
+''' 
+	Ruta base, permite verificar si la API está 
+	levantada mediante el True que devuelve
+'''
 @app.route('/')
 def index():
 	resp = Response(status=200)
 	resp.headers['respuesta'] = 'True'
 	return resp
 
-#Devolver usuario por nia
+''' /student/<int:nia> 
+	Devuelve la información relacionada con el alumno
+	del nia que se introduce.
+	Concretamente devuelve:
+		-Nombre
+		-Correo
+		-NIA
+'''
 @app.route('/student/<int:nia>', methods=['GET'])
 def getByNia(nia):
 	if check().headers['respuesta'] == 'True':
@@ -56,7 +118,24 @@ def getByNia(nia):
 		resp = Response(status=401)
 		resp.headers['respuesta'] = False
 
-#Devolver usuario por nombre
+''' /student/<string:name>
+	Devuelve la información de todos los miembros
+	de la universidad con el nombre introducido, 
+	se dan dos situaciones:
+
+	1- El número de resultados es muy grande (por ejemplo, 50)
+		+ Devuelve un codigo 500 y False
+
+	2- El número de resultados es lo suficientemente pequeño:
+		+ Devuelve el array parseado en JSON con la información
+		  de todos los alumnos encontrados.
+
+	Ej: String = "Adrián" devolverá un 500
+		String = "Adrián Alonso" puede devolver 
+				 la información de 10 resultados
+				 y un código 200.
+	
+'''
 @app.route('/student/<string:name>', methods=['GET'])
 def getByName(name):
 	if check().headers['respuesta'] == 'True':
@@ -114,6 +193,19 @@ def getByName(name):
 		resp.headers['respuesta'] = False
 		return resp
 
+
+''' 
+	/auth Method = POST
+
+	Permite generar el token correspondiente para poder
+	utilizar la aplicación.
+
+	Para ello deberá pasarse el NIA y la contraseña correspondiente.
+	Con el nia, nombre y contraseña genera un token que tiene una duración válida de 1h.
+
+	El token se devuelve en el apartado "Token" en la cabecera de la petición HTTP.
+
+'''
 #Verifica el login y si es correcto, le genera un token
 @app.route('/auth', methods=['POST'])
 def authorize():
@@ -133,6 +225,21 @@ def authorize():
 		resp.headers['respuesta'] = False
 		return resp
 
+
+''' 
+	/auth Method = GET
+
+	Permite verificar si un token es válido.
+
+	Para ello se debe pasar en la cabecera HTTP un apartado
+	llamado 'Authorization', este campo debe tener el valor:
+
+		Bearer <token>
+
+	Si el token es correcto, devuelve un código 200 y True, si 
+	es incorrecto se devuelve 401 y False.
+
+'''
 #Verifica token pasado por header de http
 @app.route('/auth', methods=['GET'])
 def check():
@@ -155,6 +262,24 @@ def check():
 			resp.headers['respuesta'] = False
 			return resp
 
+'''
+	Permite verificar si la persona correspondiente pertenece
+	a la tabla de Personas (Es decir, forma parte de alguna forma
+	de la Delegacion)
+
+	El método /auth (POST) lo utiliza para verificar 
+	la identidad del usuario.
+
+	Se puede utilizar sin necesidad del Token.
+
+	Si todo funciona correctamente devuelve un código 200
+	y True.
+
+	Si la persona es miembro de la universidad pero no está
+	en la tabla personas se devuelve un código 401 y False.
+	Si ocurre algún error en el login se devuelve un 400 y False.
+
+'''
 #Comprueba si existe el usuario
 @app.route('/login', methods=['POST'])
 def login(nia=None, password=None):
@@ -173,6 +298,20 @@ def login(nia=None, password=None):
 		resp.headers['respuesta'] = False
 		return resp
 
+
+'''
+	/permisos/<int:nia>/<int:app_id>
+
+	Permite obtener los permisos de un usuario (NIA)
+	para cierta aplicación (app_id).
+
+	Si la persona tiene permisos para esa aplicación se
+	devuelve un código 200 y los permisos correspondientes.
+	Si la persona no tiene permisos se devuelve un código 200,
+	pero los permisos serán 0.
+
+	Si ocurre algún error se devuelve un código 400 y False.
+'''
 @app.route('/permisos/<int:nia>/<int:app_id>', methods=['GET'])
 def getPermisos(nia, app_id):
 	if check().headers['respuesta'] == 'True':
@@ -191,6 +330,17 @@ def getPermisos(nia, app_id):
 		resp.headers['respuesta'] = False
 		return resp
 
+
+'''
+	/delegado/<int:nia>
+
+	Permite conocer si cierta persona (NIA) es delegado/a.
+	Para ello se comprueba con la tabla delegadoscurso de la BBDD.
+
+	Si es delegado se devuelve un 200 y True.
+	Si no es delegado se devuelve un código 200 y False.
+	Si ocurre algún error se devuelve un código 400 y False.
+'''
 @app.route('/delegado/<int:nia>', methods=['GET'])
 def getDelegado(nia):
 	if check().headers['respuesta'] == 'True':
@@ -209,6 +359,16 @@ def getDelegado(nia):
 		resp.headers['respuesta'] = False
 		return resp
 
+'''
+	/delegadoTit/<int:nia>
+
+	Permite conocer si cierta persona (NIA) es delegado/a de titulación.
+	Para ello se comprueba con la tabla delegadostitulacion de la BBDD.
+
+	Si es delegado se devuelve un 200 y True.
+	Si no es delegado se devuelve un código 200 y False.
+	Si ocurre algún error se devuelve un código 400 y False.
+'''
 @app.route('/delegadoTit/<int:nia>', methods=['GET'])
 def isTitulacion(nia):
 	if check().headers['respuesta'] == 'True':
@@ -227,6 +387,16 @@ def isTitulacion(nia):
 		resp.headers['respuesta'] = False
 		return resp
 
+'''
+	/delegadoCen/<int:nia>
+
+	Permite conocer si cierta persona (NIA) es delegado/a de titulación.
+	Para ello se comprueba con la tabla delegadoscentro de la BBDD.
+
+	Si es delegado se devuelve un 200 y su cargo correspondiente.
+	Si no es delegado se devuelve un código 200 y False.
+	Si ocurre algún error se devuelve un código 400 y False.
+'''
 @app.route('/delegadoCen/<int:nia>', methods=['GET'])
 def isCentro(nia):
 	if check().headers['respuesta'] == 'True':
