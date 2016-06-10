@@ -9,17 +9,17 @@ la Universidad Carlos III de Madrid y saber tu
 NIA y contraseña.
 
 Con ella se podrá principalmente:
-	- Buscar usuarios dados su nia o nombre.
-	- Obtener un token de verificación si el NIA
-	  y contraseña son correctos Y ADEMÁS perteneces
-	  a la Delegación de Estudiantes.
-	- Verificar el Token generado
-	- Poder verificar si una persona (NIA + contraseña)
-	  pertenece a la Delegación de Estudiantes.
-	- Conocer si dado un NIA esa persona es: 
-		* Delegado de Curso
-		* Delegado de Titulación
-		* Delegado de Centro
+- Buscar usuarios dados su nia o nombre.
+- Obtener un token de verificación si el NIA
+  y contraseña son correctos Y ADEMÁS perteneces
+  a la Delegación de Estudiantes.
+- Verificar el Token generado
+- Poder verificar si una persona (NIA + contraseña)
+  pertenece a la Delegación de Estudiantes.
+- Conocer si dado un NIA esa persona es: 
+	* Delegado de Curso
+	* Delegado de Titulación
+	* Delegado de Centro
 
 ### /
 
@@ -31,9 +31,9 @@ levantada mediante el True que devuelve
 Devuelve la información relacionada con el alumno
 del nia que se introduce.
 Concretamente devuelve:
-	- Nombre
-	- Correo
-	- NIA
+- Nombre
+- Correo
+- NIA
 
 ### /student/<string:name>
 
@@ -42,10 +42,10 @@ de la universidad con el nombre introducido,
 se dan dos situaciones:
 
 1- El número de resultados es muy grande (por ejemplo, 50)
-	* Devuelve un codigo 500 y False
+* Devuelve un codigo 500 y False
 
 2- El número de resultados es lo suficientemente pequeño:
-	* Devuelve el array parseado en JSON con la información
+* Devuelve el array parseado en JSON con la información
 	  de todos los alumnos encontrados.
 
 Ej: String = "Adrián" devolverá un 500
