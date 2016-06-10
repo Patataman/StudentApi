@@ -185,8 +185,6 @@ def getByName(name):
 	Para ello deberá pasarse el NIA y la contraseña correspondiente.
 	Con el nia, nombre y contraseña genera un token que tiene una duración válida de 1h.
 
-	El token se devuelve en el apartado "Token" en la cabecera de la petición HTTP.
-
 '''
 #Verifica el login y si es correcto, le genera un token
 @app.route('/auth', methods=['POST'])
