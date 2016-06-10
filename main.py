@@ -65,9 +65,7 @@ db.init_app(app)
 '''
 @app.route('/')
 def index():
-	resp = Response(status=200)
-	resp.headers['respuesta'] = 'True'
-	return resp
+	return 'True', 200
 
 ''' /student/<int:nia> 
 	Devuelve la información relacionada con el alumno
@@ -79,41 +77,33 @@ def index():
 '''
 @app.route('/student/<int:nia>', methods=['GET'])
 def getByNia(nia):
-	if check().headers['respuesta'] == 'True':
+	#if check()[0] == 'True':
+	if check()[0] == 'True':
 		students = None
 		nia = '(uid=*' + str(nia) + '*)'
 		try:
 			students = Student.getStudent(nia)
 		except Exception as e:
-			resp = Response(status=500)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 500
 
 		#Parsear resultados y return como json
 		if students != None:
+			#Nunca debería llamarse, el nía es único
 			if len(students)>1:
 				parser = '['
 				for i in students:
-					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
+					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':')) + ','
 				parser += ']'
-				resp = Response(status=200)
-				resp.headers['respuesta'] = parser
-				return resp
-				#return parser
+				return parser, 200
 			else:
 				parser = ''
 				for i in students:
 					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
-				resp = Response(status=200)
-				resp.headers['respuesta'] = parser
-				return resp
-				#return parser
+				return parser, 200
 		else:
-			resp = Response(status=404)
-			resp.headers['respuesta'] = False
+			return 'False', 404
 	else:
-		resp = Response(status=401)
-		resp.headers['respuesta'] = False
+		return 'False', 401
 
 ''' /student/<string:name>
 	Devuelve la información de todos los miembros
@@ -135,7 +125,7 @@ def getByNia(nia):
 '''
 @app.route('/student/<string:name>', methods=['GET'])
 def getByName(name):
-	if check().headers['respuesta'] == 'True':
+	if check()[0] == 'True':
 		result = []
 		nombre = name.split(",")
 		if len(nombre) == 2:
@@ -146,8 +136,7 @@ def getByName(name):
 		elif len(nombre) == 1:
 			nombre[0] = nombre[0].strip()
 		else:
-			resp = Response(status=406)
-			resp.headers['respuesta'] = False
+			return 'False', 406
 
 		if len(nombre) == 2:
 			result = '(cn=*' + nombre[0] + ' ' + nombre[1] + '*)'
@@ -158,37 +147,29 @@ def getByName(name):
 		try:
 			students = Student.getStudent(result)
 		except Exception as e:
-			resp = Response(status=500)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 500
 
 		#Parsear resultados y return como json
 		if students != None:
 			if len(students)>1:
 				parser = '['
+				bol = 0
 				for i in students:
+					if bol != 0:
+						parser += ','
+					if bol == 0: bol = 1
 					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
 				parser += ']'
-				resp = Response(status=200)
-				resp.headers['respuesta'] = parser
-				return resp
-				#return parser
+				return parser, 200
 			else:
 				parser = ''
 				for i in students:
 					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
-				resp = Response(status=200)
-				resp.headers['respuesta'] = parser
-				return resp
-				#return parser
+				return parser, 200
 		else:
-			resp = Response(status=404)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 404
 	else:
-		resp = Response(status=401)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 401
 
 
 ''' 
@@ -207,20 +188,17 @@ def getByName(name):
 @app.route('/auth', methods=['POST'])
 def authorize():
 	#Verifica el login y sie
-	if login(request.form['nia'], request.form['password']).headers['respuesta'] == 'True':
+	if login(request.form['nia'], request.form['password'])[0] == 'True':
 		persona = Persona.search(request.form['nia'])[0]
 		payload = {'NIA': request.form['nia'],
 					'Nombre':persona.nombre,
 					'Apellidos': persona.apellido1 + " " + persona.apellido2,
 					'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
 		token = jwt.encode(payload, app.config['SECRET'], algorithm='HS256')
-		resp = Response(status=200)
-		resp.headers['Token'] = token
-		return resp
+		#resp.headers['Token'] = token
+		return token, 200
 	else:
-		resp = Response(status=400)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 400
 
 
 ''' 
@@ -244,20 +222,14 @@ def check():
 	if request.headers.get('Authorization') != None:
 		r = request.headers.get('Authorization').split()
 	if r[0] != 'Bearer':
-		resp = Response(status=401)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 401
 	else:
 		token = r[1]
 		try:
 			jwt.decode(token, app.config['SECRET'], algorithms='HS256')
-			resp = Response(status=200)
-			resp.headers['respuesta'] = 'True'
-			return resp
+			return 'True', 200
 		except Exception as e:
-			resp = Response(status=401)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 401
 
 '''
 	Permite verificar si la persona correspondiente pertenece
@@ -283,17 +255,11 @@ def login(nia=None, password=None):
 	ldap = LdapApi(app.config['LDAP_URI'], request.form['nia'], request.form['password'])
 	if ldap.auth() == 0:
 		if Persona.search(request.form['nia']).count() > 0:
-			resp = Response(status=200)
-			resp.headers['respuesta'] = 'True'
-			return resp
+			return 'True', 200
 		else:
-			resp = Response(status=401)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 401
 	else:
-		resp = Response(status=400)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 400
 
 
 '''
@@ -311,21 +277,15 @@ def login(nia=None, password=None):
 '''
 @app.route('/permisos/<int:nia>/<int:app_id>', methods=['GET'])
 def getPermisos(nia, app_id):
-	if check().headers['respuesta'] == 'True':
+	if check()[0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			permiso = Persona.getPermisos(app_id, persona_id)[0].rol
-			resp = Response(status=200)
-			resp.headers['respuesta'] = permiso
-			return resp
+			return str(permiso), 200
 		except Exception as e:
-			resp = Response(status=200)
-			resp.headers['respuesta'] = 0
-			return resp
+			return '0', 200
 	else:
-		resp = Response(status=400)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 400
 
 
 '''
@@ -340,21 +300,15 @@ def getPermisos(nia, app_id):
 '''
 @app.route('/delegado/<int:nia>', methods=['GET'])
 def getDelegado(nia):
-	if check().headers['respuesta'] == 'True':
+	if check()[0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			isDel = Persona.isDelegado(persona_id)[0]
-			resp = Response(status=200)
-			resp.headers['respuesta'] = True
-			return resp
+			return 'True', 200
 		except Exception as e:
-			resp = Response(status=200)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 200
 	else:
-		resp = Response(status=400)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 400
 
 '''
 	/delegadoTit/<int:nia>
@@ -368,21 +322,15 @@ def getDelegado(nia):
 '''
 @app.route('/delegadoTit/<int:nia>', methods=['GET'])
 def isTitulacion(nia):
-	if check().headers['respuesta'] == 'True':
+	if check()[0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			isDel = Persona.isDelegadoTitulacion(persona_id)[0]
-			resp = Response(status=200)
-			resp.headers['respuesta'] = True
-			return resp
+			return 'True', 200
 		except Exception as e:
-			resp = Response(status=200)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 200
 	else:
-		resp = Response(status=400)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 400
 
 '''
 	/delegadoCen/<int:nia>
@@ -396,21 +344,15 @@ def isTitulacion(nia):
 '''
 @app.route('/delegadoCen/<int:nia>', methods=['GET'])
 def isCentro(nia):
-	if check().headers['respuesta'] == 'True':
+	if check()[0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			cargo = Persona.isDelegadoCentro(persona_id)[0].cargo
-			resp = Response(status=200)
-			resp.headers['respuesta'] = cargo
-			return resp
+			return str(cargo), 200
 		except Exception as e:
-			resp = Response(status=200)
-			resp.headers['respuesta'] = False
-			return resp
+			return 'False', 200
 	else:
-		resp = Response(status=400)
-		resp.headers['respuesta'] = False
-		return resp
+		return 'False', 400
 
 if __name__ == '__main__':
 	app.run()
