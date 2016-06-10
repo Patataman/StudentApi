@@ -65,7 +65,7 @@ db.init_app(app)
 '''
 @app.route('/')
 def index():
-	return 'True', 200
+	return json.JSONEncoder().encode({"result": ['True']})
 
 ''' /student/<int:nia> 
 	Devuelve la información relacionada con el alumno
@@ -77,14 +77,13 @@ def index():
 '''
 @app.route('/student/<int:nia>', methods=['GET'])
 def getByNia(nia):
-	#if check()[0] == 'True':
-	if check()[0] == 'True':
+	if json.loads(check())['result'][0] == 'True':
 		students = None
 		nia = '(uid=*' + str(nia) + '*)'
 		try:
 			students = Student.getStudent(nia)
 		except Exception as e:
-			return 'False', 500
+			return json.JSONEncoder().encode({"result": ['False']})
 
 		#Parsear resultados y return como json
 		if students != None:
@@ -98,16 +97,16 @@ def getByNia(nia):
 					if bol == 0: bol = 1
 					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
 				parser += ']'
-				return parser, 200
+				return json.JSONEncoder().encode({"result": [parser]})
 			else:
 				parser = ''
 				for i in students:
 					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
-				return parser, 200
+				return json.JSONEncoder().encode({"result": [parser]})
 		else:
-			return 'False', 404
+			return json.JSONEncoder().encode({"result": ['False']})
 	else:
-		return 'False', 401
+		return json.JSONEncoder().encode({"result": ['False']})
 
 ''' /student/<string:name>
 	Devuelve la información de todos los miembros
@@ -129,7 +128,7 @@ def getByNia(nia):
 '''
 @app.route('/student/<string:name>', methods=['GET'])
 def getByName(name):
-	if check()[0] == 'True':
+	if json.loads(check())['result'][0] == 'True':
 		result = []
 		nombre = name.split(",")
 		if len(nombre) == 2:
@@ -140,7 +139,7 @@ def getByName(name):
 		elif len(nombre) == 1:
 			nombre[0] = nombre[0].strip()
 		else:
-			return 'False', 406
+			return json.JSONEncoder().encode({"result": ['False']})
 
 		if len(nombre) == 2:
 			result = '(cn=*' + nombre[0] + ' ' + nombre[1] + '*)'
@@ -151,7 +150,7 @@ def getByName(name):
 		try:
 			students = Student.getStudent(result)
 		except Exception as e:
-			return 'False', 500
+			return json.JSONEncoder().encode({"result": ['False']})
 
 		#Parsear resultados y return como json
 		if students != None:
@@ -164,16 +163,16 @@ def getByName(name):
 					if bol == 0: bol = 1
 					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
 				parser += ']'
-				return parser, 200
+				return json.JSONEncoder().encode({"result": [parser]})
 			else:
 				parser = ''
 				for i in students:
 					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
-				return parser, 200
+				return json.JSONEncoder().encode({"result": [parser]})
 		else:
-			return 'False', 404
+			return json.JSONEncoder().encode({"result": ['False']})
 	else:
-		return 'False', 401
+		return json.JSONEncoder().encode({"result": ['False']})
 
 
 ''' 
@@ -198,9 +197,9 @@ def authorize():
 					'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
 		token = jwt.encode(payload, app.config['SECRET'], algorithm='HS256')
 		#resp.headers['Token'] = token
-		return token, 200
+		return json.JSONEncoder().encode({"result": [token]})
 	else:
-		return 'False', 400
+		return json.JSONEncoder().encode({"result": ['False']})
 
 
 ''' 
@@ -224,14 +223,14 @@ def check():
 	if request.headers.get('Authorization') != None:
 		r = request.headers.get('Authorization').split()
 	if r[0] != 'Bearer':
-		return 'False', 401
+		return json.JSONEncoder().encode({"result": ['False']})
 	else:
 		token = r[1]
 		try:
 			jwt.decode(token, app.config['SECRET'], algorithms='HS256')
-			return 'True', 200
+			return json.JSONEncoder().encode({"result": ['True']})
 		except Exception as e:
-			return 'False', 401
+			return json.JSONEncoder().encode({"result": ['False']})
 
 '''
 	Permite verificar si la persona correspondiente pertenece
@@ -257,11 +256,11 @@ def login(nia=None, password=None):
 	ldap = LdapApi(app.config['LDAP_URI'], request.form['nia'], request.form['password'])
 	if ldap.auth() == 0:
 		if Persona.search(request.form['nia']).count() > 0:
-			return 'True', 200
+			return json.JSONEncoder().encode({"result": ['True']})
 		else:
-			return 'False', 401
+			return json.JSONEncoder().encode({"result": ['False']})
 	else:
-		return 'False', 400
+		return json.JSONEncoder().encode({"result": ['False']})
 
 
 '''
@@ -279,15 +278,15 @@ def login(nia=None, password=None):
 '''
 @app.route('/permisos/<int:nia>/<int:app_id>', methods=['GET'])
 def getPermisos(nia, app_id):
-	if check()[0] == 'True':
+	if json.loads(check())['result'][0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			permiso = Persona.getPermisos(app_id, persona_id)[0].rol
-			return str(permiso), 200
+			return json.JSONEncoder().encode({"result": [permiso]})
 		except Exception as e:
-			return '0', 200
+			return json.JSONEncoder().encode({"result": [0]})
 	else:
-		return 'False', 400
+		return json.JSONEncoder().encode({"result": ['False']})
 
 
 '''
@@ -302,15 +301,15 @@ def getPermisos(nia, app_id):
 '''
 @app.route('/delegado/<int:nia>', methods=['GET'])
 def getDelegado(nia):
-	if check()[0] == 'True':
+	if json.loads(check())['result'][0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			isDel = Persona.isDelegado(persona_id)[0]
-			return 'True', 200
+			return json.JSONEncoder().encode({"result": ['True']})
 		except Exception as e:
-			return 'False', 200
+			return json.JSONEncoder().encode({"result": ['False']})
 	else:
-		return 'False', 400
+		return json.JSONEncoder().encode({"result": ['False']})
 
 '''
 	/delegadoTit/<int:nia>
@@ -324,15 +323,15 @@ def getDelegado(nia):
 '''
 @app.route('/delegadoTit/<int:nia>', methods=['GET'])
 def isTitulacion(nia):
-	if check()[0] == 'True':
+	if json.loads(check())['result'][0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			isDel = Persona.isDelegadoTitulacion(persona_id)[0]
-			return 'True', 200
+			return json.JSONEncoder().encode({"result": ['True']})
 		except Exception as e:
-			return 'False', 200
+			return json.JSONEncoder().encode({"result": ['False']})
 	else:
-		return 'False', 400
+		return json.JSONEncoder().encode({"result": ['False']})
 
 '''
 	/delegadoCen/<int:nia>
@@ -346,15 +345,17 @@ def isTitulacion(nia):
 '''
 @app.route('/delegadoCen/<int:nia>', methods=['GET'])
 def isCentro(nia):
-	if check()[0] == 'True':
+
+	print json.loads(check())['result'][0] == 'True'
+	if json.loads(check())['result'][0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
 			cargo = Persona.isDelegadoCentro(persona_id)[0].cargo
-			return str(cargo), 200
+			return json.JSONEncoder().encode({"result": [cargo]})
 		except Exception as e:
-			return 'False', 200
+			return json.JSONEncoder().encode({"result": ['False']})
 	else:
-		return 'False', 400
+		return json.JSONEncoder().encode({"result": ['False']})
 
 if __name__ == '__main__':
 	app.run()
