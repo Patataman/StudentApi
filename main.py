@@ -346,7 +346,6 @@ def isTitulacion(nia):
 @app.route('/delegadoCen/<int:nia>', methods=['GET'])
 def isCentro(nia):
 
-	print json.loads(check())['result'][0] == 'True'
 	if json.loads(check())['result'][0] == 'True':
 		try:
 			persona_id = Persona.search(nia)[0].id
