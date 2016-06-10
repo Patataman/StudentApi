@@ -1,26 +1,26 @@
 ## StudentApi
-    
-    :shipit: *! ATENCION !* :shipit:
-    
-    ESTA API SE AUTODESTRUIRÁ EN 5- es broma, xdddd
-    
-    Para poder usar esta API deberás ser miembro de 
-    la Universidad Carlos III de Madrid y saber tu 
-    NIA y contraseña.
-    
-    Con ella se podrá principalmente:
-    	- Buscar usuarios dados su nia o nombre.
-    	- Obtener un token de verificación si el NIA
-    	  y contraseña son correctos Y ADEMÁS perteneces
-    	  a la Delegación de Estudiantes.
-    	- Verificar el Token generado
-    	- Poder verificar si una persona (NIA + contraseña)
-    	  pertenece a la Delegación de Estudiantes.
-    	- Conocer si dado un NIA esa persona es: 
-    		* Delegado de Curso
-    		* Delegado de Titulación
-    		* Delegado de Centro
-    
+
+:shipit: *! ATENCION !* :shipit:
+
+ESTA API SE AUTODESTRUIRÁ EN 5- es broma, xdddd
+
+Para poder usar esta API deberás ser miembro de 
+la Universidad Carlos III de Madrid y saber tu 
+NIA y contraseña.
+
+Con ella se podrá principalmente:
+	- Buscar usuarios dados su nia o nombre.
+	- Obtener un token de verificación si el NIA
+	  y contraseña son correctos Y ADEMÁS perteneces
+	  a la Delegación de Estudiantes.
+	- Verificar el Token generado
+	- Poder verificar si una persona (NIA + contraseña)
+	  pertenece a la Delegación de Estudiantes.
+	- Conocer si dado un NIA esa persona es: 
+		* Delegado de Curso
+		* Delegado de Titulación
+		* Delegado de Centro
+
 ### /
 
 Ruta base, permite verificar si la API está 
