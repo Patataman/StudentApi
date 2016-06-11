@@ -21,6 +21,12 @@ Con ella se podrá principalmente:
 	* Delegado de Titulación
 	* Delegado de Centro
 
+Todos los resultados se devuelven en un JSON que tiene el formato:
+
+```
+	{"result": <resultado> }
+```
+
 ### /
 
 Ruta base, permite verificar si la API está 
