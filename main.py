@@ -156,21 +156,27 @@ def getByName(name):
 
 		#Parsear resultados y return como json
 		if students != None:
-			if len(students)>1:
-				parser = '['
-				bol = 0
-				for i in students:
-					if bol != 0:
-						parser += ','
-					if bol == 0: bol = 1
-					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
-				parser += ']'
-				return json.JSONEncoder().encode({"result": [parser]})
-			else:
-				parser = ''
-				for i in students:
-					parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
-				return json.JSONEncoder().encode({"result": [parser]})
+			#if len(students)>1:
+			#	parser = '['
+			#	bol = 0
+			#	for i in students:
+			#		if bol != 0:
+			#			parser += ','
+			#		if bol == 0: bol = 1
+			#		parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
+			#	parser += ']'
+			#	return json.JSONEncoder().encode({"result": [parser]})
+			#else:
+			#	parser = ''
+			#	for i in students:
+			#		parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
+			#	return json.JSONEncoder().encode({"result": [parser]})
+			parser = []
+			for i in students:
+				persona = "%s, %s, %s" % (i.name, i.uid, i.email)
+				#parser.append(json.dumps([i.name, i.uid, i.email], separators=(',',':')))
+				parser.append(persona)
+			return json.JSONEncoder().encode({"result": parser})
 		else:
 			return json.JSONEncoder().encode({"result": False})
 	else:
