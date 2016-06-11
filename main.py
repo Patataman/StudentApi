@@ -101,7 +101,7 @@ def getByNia(nia):
 			#else:
 			parser = []
 			for i in students:
-				parser.append(json.dumps([i.name, i.uid, i.email], separators=(',',':')))
+				parser.append(json.dumps(i.name, i.uid, i.email, separators=(',',':')))
 			return json.JSONEncoder().encode({"result": parser})
 		else:
 			return json.JSONEncoder().encode({"result": False})
