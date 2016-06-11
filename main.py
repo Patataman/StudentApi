@@ -99,10 +99,10 @@ def getByNia(nia):
 			#	parser += ']'
 			#	return json.JSONEncoder().encode({"result": [parser]})
 			#else:
-			#parser = ''
-			#for i in students:
-			#	parser += json.dumps([i.name, i.uid, i.email], separators=(',',':'))
-			return json.JSONEncoder().encode({"result": students})
+			parser = []
+			for i in students:
+				parser.append(json.dumps([i.name, i.uid, i.email], separators=(',',':')))
+			return json.JSONEncoder().encode({"result": parser})
 		else:
 			return json.JSONEncoder().encode({"result": False})
 	else:
