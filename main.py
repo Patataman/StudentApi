@@ -189,7 +189,7 @@ def getByName(name):
 @app.route('/auth', methods=['POST'])
 def authorize():
 	#Verifica el login y sie
-	if login(request.form['nia'], request.form['password'])['result'] == True:
+	if json.loads(login(request.form['nia'], request.form['password']))['result'] == True:
 		persona = Persona.search(request.form['nia'])[0]
 		payload = {'NIA': request.form['nia'],
 					'Nombre':persona.nombre,
