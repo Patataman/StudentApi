@@ -284,7 +284,7 @@ def getPermisos(nia, app_id):
 			permiso = Persona.getPermisos(app_id, persona_id)[0].rol
 			return json.JSONEncoder().encode({"result": [permiso]})
 		except Exception as e:
-			return json.JSONEncoder().encode({"result": [0]})
+			return json.JSONEncoder().encode({"result": 0})
 	else:
 		return json.JSONEncoder().encode({"result": False})
 
@@ -350,7 +350,7 @@ def isCentro(nia):
 		try:
 			persona_id = Persona.search(nia)[0].id
 			cargo = Persona.isDelegadoCentro(persona_id)[0].cargo
-			return json.JSONEncoder().encode({"result": [cargo]})
+			return json.JSONEncoder().encode({"result": cargo})
 		except Exception as e:
 			return json.JSONEncoder().encode({"result": False})
 	else:
